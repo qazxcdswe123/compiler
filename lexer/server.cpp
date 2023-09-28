@@ -47,8 +47,12 @@ int main() {
 
                  for (Token token = lexer.next(); !token.is(Token::Type::Eof);
                       token = lexer.next()) {
+                     auto lexeme = token.getLexeme();
+                     if (lexeme == "include") {
+                         lexeme = "import";
+                     }
                      std::map < Token::Type, std::string_view > token_map = {
-                             {token.getType(), token.getLexeme()}
+                             {token.getType(), lexeme}
                      };
                      tokens.push_back(token_map);
                  }

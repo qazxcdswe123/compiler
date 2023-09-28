@@ -8,7 +8,7 @@
 
 class Token {
 public:
-    enum class Type {
+    enum Type {
         Number = 0,
         Identifier,
         Keyword,
