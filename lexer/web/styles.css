@@ -2,11 +2,11 @@
     display: flex;
     justify-content: center;
     align-content: center;
-    height: 50vh;
+    height: 60vh;
 }
 
 #codeInput {
-    width: 100%;
+    width: 50vh;
     height: 80%;
     margin-bottom: 10px;
 }
