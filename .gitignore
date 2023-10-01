@@ -1,5 +1,7 @@
 ### C++ template
 cmake-build-debug
+build
+.cache
 # Prerequisites
 *.d
 
