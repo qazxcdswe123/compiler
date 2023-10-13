@@ -73,7 +73,7 @@ int main() {
              }
     );
 
-    svr.listen("0.0.0.0", 8080);
     std::cout << "Starting server on port 8080..." << std::endl;
     std::cout << "Waiting for requests..." << std::endl;
+    svr.listen("0.0.0.0", 8080);
 }
