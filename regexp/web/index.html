@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Tabbed Interface</title>
+</head>
+<body>
+<div class="tab-container">
+    <div class="tabs">
+        <button class="tablinks" onclick="openTab('tab1')">RE 2 NFA</button>
+        <button class="tablinks" onclick="openTab('tab2')">RE 2 DFA</button>
+        <button class="tablinks" onclick="openTab('tab3')">RE 2 Minimized DFA</button>
+        <button class="tablinks" onclick="openTab('tab4')">RE 2 Code</button>
+    </div>
+    <div id="tab1" class="tabcontent">
+        <h2>RE 2 NFA</h2>
+        <div>
+            <textarea rows="5" id="input1" placeholder="Enter Regular Expression"></textarea>
+        </div>
+        <div>
+            <input type="file" id="load1" style="display: none;" onchange="loadText(1)"/>
+            <button onclick="saveText(1)">Save</button>
+            <button onclick="document.getElementById('load1').click()">Load</button>
+            <button onclick="convertToTable(1)">Convert</button>
+        </div>
+        <table id="output1">
+            <!-- Table content will be generated here -->
+        </table>
+    </div>
+    <div id="tab2" class="tabcontent">
+        <h2>RE 2 DFA</h2>
+        <div>
+            <textarea rows="5" id="input2" placeholder="Enter Regular Expression"></textarea>
+        </div>
+        <div>
+            <input type="file" id="load2" style="display: none;" onchange="loadText(2)"/>
+            <button onclick="saveText(2)">Save</button>
+            <button onclick="document.getElementById('load2').click()">Load</button>
+            <button onclick="convertToTable(2)">Convert</button>
+        </div>
+        <table id="output2">
+            <!-- Table content will be generated here -->
+        </table>
+    </div>
+    <div id="tab3" class="tabcontent">
+        <h2>RE 2 Minimized DFA</h2>
+        <div>
+            <textarea rows="5" id="input3" placeholder="Enter Regular Expression"></textarea>
+        </div>
+        <div>
+            <input type="file" id="load3" style="display: none;" onchange="loadText(3)"/>
+            <button onclick="saveText(3)">Save</button>
+            <button onclick="document.getElementById('load3').click()">Load</button>
+            <button onclick="convertToTable(3)">Convert</button>
+        </div>
+        <table id="output3">
+            <!-- Table content will be generated here -->
+        </table>
+    </div>
+    <div id="tab4" class="tabcontent">
+        <h2>RE 2 Code</h2>
+        <div>
+            <textarea rows="5" id="input4" placeholder="Enter Regular Expression"></textarea>
+        </div>
+        <div>
+            <input type="file" id="load4" style="display: none;" onchange="loadText(4)"/>
+            <button onclick="saveText(4)">Save</button>
+            <button onclick="document.getElementById('load4').click()">Load</button>
+            <button onclick="convertToTable(4)">Convert</button>
+        </div>
+        <div>
+            <pre id="codeOutput4">
+            </pre>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
