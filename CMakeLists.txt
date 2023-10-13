@@ -5,3 +5,4 @@ enable_testing()
 
 add_subdirectory(googletest)
 add_subdirectory(lexer)
+add_subdirectory(regexp)
