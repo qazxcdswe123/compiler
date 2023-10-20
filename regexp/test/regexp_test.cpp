@@ -23,12 +23,12 @@ TEST(Regexp, CharClass) {
 
 TEST(RegexTest, RegexToPostfix) {
     std::string input_re1 = "a(b|c)*d";
-    std::string expected_post_re1 = "abc|*d";
+    std::string expected_post_re1 = "abc|*.d.";
     auto r = Regexp(input_re1);
     EXPECT_EQ(r.get_post_re(), expected_post_re1);
 
     std::string input_re2 = "a+b*(c?|d)+";
-    std::string expected_post_re2 = "a+b*c?d|+";
+    std::string expected_post_re2 = "a+b*.c?d|+.";
     auto r2 = Regexp(input_re2);
     EXPECT_EQ(r2.get_post_re(), expected_post_re2);
 }

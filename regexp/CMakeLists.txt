@@ -6,9 +6,20 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include_directories(include)
 
-# TODO: implement
-#add_library(libregexp)
+add_library(libregexp
+        re.h
+        re.cpp
+        nfa.h
+        nfa.cpp
+)
+
+add_executable(nfa example_nfa.c)
 
 add_executable(regexp_test test/regexp_test.cpp)
-target_link_libraries(regexp_test GTest::gtest_main)
-#target_link_libraries(regexp_test libregexp)
+target_link_libraries(regexp_test GTest::gtest_main libregexp)
+
+add_executable(regex_main main.cpp)
+target_link_libraries(regex_main libregexp)
+
+add_executable(regex_server server.cpp)
+target_link_libraries(regex_server libregexp)

@@ -5,7 +5,6 @@
 #include "re.h"
 
 #include <stack>
-#include <map>
 
 void Regexp::normalize_char_class(std::string_view re) {
     // assume on one char class in re
@@ -70,54 +69,98 @@ void Regexp::normalize_char_class(std::string_view re) {
     this->re_ = result;
 }
 
+/*
+ * Convert infix regexp re to postfix notation.
+ * Insert . as explicit concatenation operator.
+ * Return true if success, false otherwise.
+ */
 bool Regexp::re2post() {
-    std::stack<char> paren;
+    struct paren {
+        int n_alt;
+        int n_char;
+    };
+    int n_alt = 0, n_char = 0;
+    std::stack<paren> paren_stack;
     std::string result;
 
-    for (int i = 0; i < this->re_.size(); i++) {
-        char c = this->re_[i];
+    for (char c : this->re_) {
         switch (c) {
-            case '(':
-                paren.push(c);
-                break;
-            case ')':
-                while (!paren.empty() && paren.top() != '(') {
-                    result.push_back(paren.top());
-                    paren.pop();
+            case '(': {
+                if (n_char > 1) {
+                    --n_char;
+                    result.push_back('.');
                 }
-                if (paren.empty()) {
-                    // mismatched parentheses
+                if (paren_stack.size() > 100) {
                     return false;
                 }
-                paren.pop();
+                paren p{};
+                p.n_alt = n_alt;
+                p.n_char = n_char;
+                paren_stack.push(p);
+                n_alt = 0;
+                n_char = 0;
                 break;
+            }
+            case '|': {
+                if (n_char == 0) {
+                    return false;
+                }
+                while (--n_char > 0) {
+                    result.push_back('.');
+                }
+                n_alt++;
+                break;
+            }
+            case ')': {
+                if (paren_stack.empty()) {
+                    return false;
+                }
+                if (n_char == 0) {
+                    return false;
+                }
+                while (--n_char > 0) {
+                    result.push_back('.');
+                }
+                for (; n_alt > 0; n_alt--) {
+                    result.push_back('|');
+                }
+                n_alt = paren_stack.top().n_alt;
+                n_char = paren_stack.top().n_char;
+                paren_stack.pop();
+                n_char++;
+                break;
+            }
             case '*':
             case '+':
-            case '?':
-                if (i == 0) {
-                    // * + ? cannot be the first char
+            case '?': {
+                if (n_char == 0) {
                     return false;
                 }
                 result.push_back(c);
                 break;
-            case '|':
-                while (!paren.empty() && paren.top() != '(') {
-                    result.push_back(paren.top());
-                    paren.pop();
+            }
+            default: {
+                if (n_char > 1) {
+                    --n_char;
+                    result.push_back('.');
                 }
-                paren.push(c);
-                break;
-            default:
                 result.push_back(c);
+                n_char++;
                 break;
+            }
         }
     }
 
-    while (!paren.empty()) {
-        result.push_back(paren.top());
-        paren.pop();
+    if (!paren_stack.empty()) {
+        return false;
     }
-
+    while (--n_char > 0) {
+        result.push_back('.');
+    }
+    for (; n_alt > 0; n_alt--) {
+        result.push_back('|');
+    }
+    printf("postfix: %s\n", result.c_str());
     this->post_re_ = result;
     return true;
 }

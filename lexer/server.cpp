@@ -1,5 +1,5 @@
-#include "include/json.hpp"
-#include "include/httplib.h"
+#include "../include/json.hpp"
+#include "../include/httplib.h"
 #include "include/lexer.h"
 
 #include <string>
