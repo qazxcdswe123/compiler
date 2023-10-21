@@ -107,3 +107,8 @@ State NFA::getEnd() const {
     return end_;
 }
 
+void NFA::reset() {
+    state_count_ = 0;
+    transition_.clear();
+}
+

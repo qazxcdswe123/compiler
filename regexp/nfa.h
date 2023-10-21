@@ -22,6 +22,8 @@ public:
     static std::map<State, std::map<char, std::set<State>>> transition_;
     static std::size_t state_count_;
 
+    static void reset();
+
     explicit NFA(const char &input);
 
     explicit NFA(std::string_view post_re); // construct NFA from postfix regex
