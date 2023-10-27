@@ -18,7 +18,7 @@ target_link_libraries(lexer_cli liblexer)
 add_executable(lexer_http
         server.cpp
 )
-target_link_libraries(lexer_http liblexer)
+target_link_libraries(lexer_http pthread liblexer)
 
 add_executable(lexer_test test/lexer_test.cpp)
 target_link_libraries(lexer_test GTest::gtest_main)
