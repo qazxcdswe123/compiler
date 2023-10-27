@@ -5,6 +5,7 @@
 #include "re.h"
 
 #include <stack>
+#include <vector>
 
 void Regexp::normalize_char_class(std::string_view re) {
     // assume on one char class in re
