@@ -6,6 +6,7 @@
 #define COMPILER_RE_H
 
 #include <string>
+#include <stdexcept>
 
 class Regexp {
 private:
