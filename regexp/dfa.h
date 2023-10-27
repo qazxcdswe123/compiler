@@ -19,14 +19,15 @@ public:
 
     static bool containEnd(const std::set<State> &states, const NFA &nfa);
 
-    static std::set<std::set<State>> DFAStates_;
+    static std::set<DFAState> DFAStates_;
 
     static std::set<std::set<DFAState>> Minimized_DFAStates_;
 
     // transition table for DFA
     static std::map<std::set<State>, std::map<char, std::set<State>>> transition_;
 
-    static std::map<MinimizedDFAState, std::map<std::set<char>, std::set<DFAState>>> minimized_transition_;
+    // transition table for Minimzed DFA
+    static std::map<MinimizedDFAState, std::map<std::set<char>, MinimizedDFAState>> minimized_transition_;
 
     static void reset();
 

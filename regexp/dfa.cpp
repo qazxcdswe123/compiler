@@ -137,11 +137,6 @@ std::map<MinimizedDFAState, std::map<std::set<char>, MinimizedDFAState>> DFA::mi
 std::set<MinimizedDFAState> DFA::Minimized_DFAStates_ = {};
 
 void DFA::minimize() {
-    /*
-     * A partition contain multiple p
-     * p is a set of DFA State
-     * DA is the set with accepting state
-     */
     std::vector<std::set<DFAState>> partition = {ends_};
     std::set<DFAState> non_accepting;
     for (auto &state: DFAStates_) {
@@ -165,6 +160,9 @@ void DFA::minimize() {
 
             std::set<DFAState> image;
             for (auto &state: DFAStates_) {
+                if (transition_.find(state) == transition_.end()) {
+                    continue;
+                }
                 if (transition_[state].find(c) == transition_[state].end()) {
                     continue;
                 }
@@ -248,7 +246,7 @@ void DFA::minimize() {
             // find the transition the dfa state has
             if (transition_.find(dfaState) != transition_.end()) {
                 for (auto &c: alphabet) {
-                    if (transition_[dfaState].find(c) != transition_[dfaState].end()) {
+                    if (transition_.at(dfaState).find(c) != transition_.at(dfaState).end()) {
                         // find the set of dfa state that the transition leads to
                         possible_alphabet.insert(c);
                         if (next_found) {
@@ -268,7 +266,9 @@ void DFA::minimize() {
             }
         }
 
-        minimized_transition_[fromMinimizedDFAState][possible_alphabet] = next_minimized_state;
+        if (next_found) {
+            minimized_transition_[fromMinimizedDFAState][possible_alphabet] = next_minimized_state;
+        }
     }
 }
 

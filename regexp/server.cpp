@@ -16,6 +16,9 @@ void handleRE2NFA(const Request &req, Response &res) {
     allReset();
 
     std::string re = req.body;
+    if (re.empty()) {
+        return;
+    }
     // substitute '\n' with |
     for (auto &c: re) {
         if (c == '\n') {
@@ -56,6 +59,9 @@ void handleRE2DFA(const Request &req, Response &res) {
     allReset();
 
     std::string re = req.body;
+    if (re.empty()) {
+        return;
+    }
     // substitute '\n' with |
     for (auto &c: re) {
         if (c == '\n') {
@@ -96,6 +102,9 @@ void handleRE2MiniDFA(const Request &req, Response &res) {
     allReset();
 
     std::string re = req.body;
+    if (re.empty()) {
+        return;
+    }
     // substitute '\n' with |
     for (auto &c: re) {
         if (c == '\n') {
@@ -138,6 +147,9 @@ void handleRE2Code(const Request &req, Response &res) {
     allReset();
 
     std::string re = req.body;
+    if (re.empty()) {
+        return;
+    }
     // substitute '\n' with |
     for (auto &c: re) {
         if (c == '\n') {

@@ -24,7 +24,7 @@ public:
 
     static void reset();
 
-    explicit NFA(const char &input);
+    explicit NFA(const char &input); // construct NFA for single char
 
     explicit NFA(std::string_view post_re); // construct NFA from postfix regex
 

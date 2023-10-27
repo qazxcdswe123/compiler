@@ -42,12 +42,13 @@ function openTab(tabName) {
 function populateCode(data) {
     // populate to id codeOutput
     const codeOutput = document.getElementById("codeOutput4");
-    codeOutput.innerHTML = data["code"];
+    // escape bracket in <string>
+    let code = data["code"].replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    codeOutput.innerHTML = code;
 }
 
 function convertToTable(tabNumber) {
     let inputId = "input" + tabNumber;
-    let outputId = "output" + tabNumber;
     let inputValue = document.getElementById(inputId).value;
     let url = 'http://127.0.0.1:8080/'
     if (tabNumber === 1) {
@@ -85,12 +86,17 @@ function convertToTable(tabNumber) {
 openTab('tab1');
 
 function populateNFATable(data) {
-    // Get all unique states (excluding empty states)
-    const uniqueStates = Array.from(new Set(data.filter(item => item.from !== undefined).map(item => item.from)));
+    // Get all unique states (excluding empty states), both from and to
+    const uniqueStates = Array.from(new Set(data.map(item => item.from).concat(data.map(item => item.to))))
     const uniqueTransitions = Array.from(new Set(data.filter(item => item.char !== undefined).map(item => item.char)));
     uniqueTransitions.sort((a, b) => b - a);
 
     const table1 = document.getElementById("output1");
+
+    // clear the table first
+    while (table1.firstChild) {
+        table1.removeChild(table1.firstChild);
+    }
 
     /*
     the first col is for the start and end state indication
@@ -127,6 +133,7 @@ function populateNFATable(data) {
 function populateDFATable(data) {
     // Get all unique states (both from and to, excluding empty states)
     const States = Array.from(new Set(data.map(item => item.from).concat(data.map(item => item.to))))
+
     const uniqueStates = States.filter((item, index) => {
         return States.findIndex(i => JSON.stringify(i) === JSON.stringify(item)) === index;
     });
@@ -134,6 +141,9 @@ function populateDFATable(data) {
     uniqueTransitions.sort((a, b) => b - a);
 
     const table = document.getElementById("output2");
+    while (table.firstChild) {
+        table.removeChild(table.firstChild);
+    }
 
     /*
     the first col is for the start and end state indication
@@ -161,7 +171,9 @@ function populateDFATable(data) {
         return endStates.findIndex(i => JSON.stringify(i) === JSON.stringify(item)) === index;
     });
 
+    console.log(data)
     uniqueStates.forEach(state => {
+        console.log(state)
         const row = document.createElement("tr");
         // start or end
         let soe_text = "";
@@ -174,8 +186,8 @@ function populateDFATable(data) {
         row.innerHTML += `<td>${soe_text}</td>`;
         row.innerHTML += `<td>${state}</td>`;
         uniqueTransitions.forEach(char => {
-            const transitionStates = data.filter(item => item.from === state && item.char === char).map(item => item.to);
-            row.innerHTML += `<td>${transitionStates.join(", ") || ""}</td>`;
+            const toState = data.filter(item => JSON.stringify(item.from) === JSON.stringify(state) && item.char === char).map(item => item.to);
+            row.innerHTML += `<td>${toState.join(", ") || ""}</td>`;
         })
         table.appendChild(row);
     });
@@ -191,13 +203,19 @@ function contain(arr_of_arr, arr) {
 }
 
 function populateMiniDFATable(data) {
+    data = data.filter(item => item.from !== undefined && item.to !== undefined && item.char !== undefined)
     const States = Array.from(new Set(data.map(item => item.from).concat(data.map(item => item.to))))
     const uniqueStates = States.filter((item, index) => {
         return States.findIndex(i => JSON.stringify(i) === JSON.stringify(item)) === index;
     });
-    const uniqueTransitions = Array.from(new Set(data.filter(item => item.char !== undefined).map(item => item.char)));
-    uniqueTransitions.sort((a, b) => b - a);
+    console.log(data)
+    const uniqueTransitions = Array.from(new Set(data.map(item => item.char)));
+    console.log(uniqueTransitions)
     const table = document.getElementById("output3");
+
+    while (table.firstChild) {
+        table.removeChild(table.firstChild);
+    }
 
     firstRow = document.createElement("tr");
     firstRow.innerHTML = "<th>Start or End?</th><th>From</th>";
