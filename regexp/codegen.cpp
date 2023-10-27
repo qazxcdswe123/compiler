@@ -1,5 +1,7 @@
 #include "codegen.h"
 
+#include <memory>
+
 namespace CodeGen {
     constexpr auto &minimizedTransitionTable = DFA::minimized_transition_;
 
