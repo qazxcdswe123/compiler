@@ -28,7 +28,6 @@ public:
 
     static std::map<MinimizedDFAState, std::map<std::set<char>, std::set<DFAState>>> minimized_transition_;
 
-    // TODO
     static void reset();
 
     /*

@@ -37,3 +37,7 @@ th, td {
     padding: 8px;
     text-align: left;
 }
+
+textarea {
+    width: 100%;
+}

@@ -160,7 +160,6 @@ bool Regexp::re2post() {
     for (; n_alt > 0; n_alt--) {
         result.push_back('|');
     }
-    printf("postfix: %s\n", result.c_str());
     this->post_re_ = result;
     return true;
 }
