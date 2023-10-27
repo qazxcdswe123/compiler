@@ -20,5 +20,5 @@ add_library(libregexp
 add_executable(regexp_test test/regexp_test.cpp)
 target_link_libraries(regexp_test GTest::gtest_main libregexp)
 
-add_executable(regex_server server.cpp)
-target_link_libraries(regex_server pthread libregexp)
+add_executable(regexp_server server.cpp)
+target_link_libraries(regexp_server pthread libregexp)
