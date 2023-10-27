@@ -7672,7 +7672,7 @@ class lexer : public lexer_base<BasicJsonType>
                             {
                                 if (JSON_HEDLEY_UNLIKELY(0xDC00 <= codepoint1 && codepoint1 <= 0xDFFF))
                                 {
-                                    error_message = "invalid string: surrogate U+DC00..U+DFFF must follow U+D800..U+DBFF";
+                                    error_message = "invalid string: surrogate U+DC00..U+DFFF must move U+D800..U+DBFF";
                                     return token_type::parse_error;
                                 }
                             }

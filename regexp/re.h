@@ -25,11 +25,11 @@ public:
 
     void normalize_char_class(std::string_view re);
 
-    std::string_view get_re() const {
+    [[nodiscard]] std::string_view get_re() const {
         return re_;
     }
 
-    std::string_view get_post_re() const {
+    [[nodiscard]] std::string_view get_post_re() const {
         return post_re_;
     }
 };

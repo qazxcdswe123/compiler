@@ -11,9 +11,11 @@ add_library(libregexp
         re.cpp
         nfa.h
         nfa.cpp
+        dfa.h
+        dfa.cpp
+        codegen.h
+        codegen.cpp
 )
-
-add_executable(nfa example_nfa.c)
 
 add_executable(regexp_test test/regexp_test.cpp)
 target_link_libraries(regexp_test GTest::gtest_main libregexp)
