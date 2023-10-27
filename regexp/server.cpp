@@ -3,31 +3,37 @@
 
 #include "re.h"
 #include "nfa.h"
+#include "dfa.h"
 
 #include <iostream>
 
 using json = nlohmann::json;
 
+// NFA to DFA test
 int main() {
     Regexp re("l(l|d)*");
-//    Regexp re("ab*");
+
     auto nfa = NFA(re.get_post_re());
-    auto res = NFA::transition_;
-    auto start = nfa.getStart();
-    auto end = nfa.getEnd();
+    auto dfa = DFA(nfa);
+    dfa.minimize();
+    auto res = DFA::transition_;
+
+    const auto &start = dfa.getStart();
+    auto ends = dfa.getEnds();
 
     json j;
     for (auto &pair: res) {
+        // transition from pair.first (set<State>) to pair.second (map<char, set<State>>)
         for (auto &pair2: pair.second) {
-            for (auto &state: pair2.second) {
-                j.push_back({
-                                    {"is_start", pair.first == start},
-                                    {"is_end",   state == end},
-                                    {"from",     pair.first},
-                                    {"to",       state},
-                                    {"char",     pair2.first}
-                            });
-            }
+            // transition from pair2.first (char) to pair2.second (set<State>)
+
+            j.push_back({
+                                {"is_start", pair.first == start},
+                                {"is_end",   DFA::containEnd(pair.first, nfa)},
+                                {"from",     pair.first},
+                                {"to",       pair2.second},
+                                {"char",     pair2.first}
+                        });
         }
     }
 

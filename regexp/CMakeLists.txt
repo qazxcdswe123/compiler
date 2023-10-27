@@ -13,6 +13,8 @@ add_library(libregexp
         nfa.cpp
         dfa.h
         dfa.cpp
+        codegen.h
+        codegen.cpp
 )
 
 add_executable(regexp_test test/regexp_test.cpp)
