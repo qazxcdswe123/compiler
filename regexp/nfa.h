@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <stdexcept>
 
 typedef std::size_t State;
 
