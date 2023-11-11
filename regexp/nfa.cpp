@@ -46,14 +46,14 @@ NFA::NFA(std::string_view post_re) {
                 break;
             }
             default: {
-                // alnum
+                // alnum or other special char
                 // |
-                // .
-                if (std::isalnum(c)) {
+                // '\'
+                if (isNormalChar(c)) {
                     NFAStack.emplace(c);
                 } else {
                     // |
-                    // .
+                    // '\'
                     auto nfa1 = NFAStack.top();
                     NFAStack.pop();
                     auto nfa2 = NFAStack.top();
@@ -72,7 +72,7 @@ NFA::NFA(std::string_view post_re) {
 
 NFA::NFA(NFA &first, NFA &second, const char &input) {
     switch (input) {
-        case '.': {
+        case '\\': {
             // concat
             epsilon_transition(first.getEnd(), second.getStart());
             this->start_ = first.getStart();
@@ -110,5 +110,9 @@ State NFA::getEnd() const {
 void NFA::reset() {
     state_count_ = 0;
     transition_.clear();
+}
+
+bool NFA::isNormalChar(char c) {
+    return (c != '*') && (c != '?') && (c != '+') && (c != '|') && (c != '\\');
 }
 

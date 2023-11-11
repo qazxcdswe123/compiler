@@ -183,7 +183,7 @@ int main() {
     svr.Post("/re2minidfa", handleRE2MiniDFA);
     svr.Post("/re2code", handleRE2Code);
 
-    std::cout << "Starting server on port 8080..." << std::endl;
+    std::cout << "Starting api server on http://localhost:8080..." << std::endl;
     std::cout << "Waiting for requests..." << std::endl;
     svr.listen("0.0.0.0", 8080);
 }

@@ -66,7 +66,7 @@ DFA::DFA(const NFA &nfa) {
     start_ = getEpsilonClosure(start);
     std::queue<std::set<State>> q;
     q.push(start_);
-    DFAStates_.insert(start);
+    DFAStates_.insert(start_);
     std::set<std::set<State>> visited;
     visited.insert(start_);
     std::set<char> alphabet = getAlphabet();
@@ -221,7 +221,9 @@ void DFA::minimize() {
         }
     }
 
+    // construct minimized DFA states
     for (auto &p: partition) {
+        // FIXME:
         Minimized_DFAStates_.insert(p);
         // mark start and ends
         if (contain(p, start_)) {

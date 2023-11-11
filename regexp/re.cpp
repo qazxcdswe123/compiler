@@ -89,7 +89,7 @@ bool Regexp::re2post() {
             case '(': {
                 if (n_char > 1) {
                     --n_char;
-                    result.push_back('.');
+                    result.push_back('\\');
                 }
                 if (paren_stack.size() > 100) {
                     return false;
@@ -107,7 +107,7 @@ bool Regexp::re2post() {
                     return false;
                 }
                 while (--n_char > 0) {
-                    result.push_back('.');
+                    result.push_back('\\');
                 }
                 n_alt++;
                 break;
@@ -120,7 +120,7 @@ bool Regexp::re2post() {
                     return false;
                 }
                 while (--n_char > 0) {
-                    result.push_back('.');
+                    result.push_back('\\');
                 }
                 for (; n_alt > 0; n_alt--) {
                     result.push_back('|');
@@ -143,7 +143,7 @@ bool Regexp::re2post() {
             default: {
                 if (n_char > 1) {
                     --n_char;
-                    result.push_back('.');
+                    result.push_back('\\');
                 }
                 result.push_back(c);
                 n_char++;
@@ -156,7 +156,7 @@ bool Regexp::re2post() {
         return false;
     }
     while (--n_char > 0) {
-        result.push_back('.');
+        result.push_back('\\');
     }
     for (; n_alt > 0; n_alt--) {
         result.push_back('|');

@@ -3,7 +3,7 @@
 .tab-container {
     display: flex;
     flex-direction: column;
-    width: 400px;
+    width: auto;
     margin: 0 auto;
 }
 

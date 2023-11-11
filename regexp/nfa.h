@@ -36,6 +36,8 @@ public:
     [[nodiscard]] State getStart() const;
 
     [[nodiscard]] State getEnd() const;
+
+    static bool isNormalChar(char c);
 };
 
 #endif // COMPILER_NFA_H
