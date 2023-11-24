@@ -1,4 +1,3 @@
-.DEFAULT_GOAL := all
 .PHONY: all clean
 
 CC = gcc
@@ -8,6 +7,8 @@ CXX = g++
 CFLAGS = -g
 
 OBJS = main.o util.o scan.o parse.o symtab.o analyze.o code.o cgen.o
+
+all: tiny server
 
 tiny: $(OBJS)
 	$(CC) $(CFLAGS) -o tiny $(OBJS)
@@ -47,5 +48,3 @@ tm: tm.c
 
 server: server.cpp
 	$(CXX) $(CFLAGS) -o server server.cpp
-
-all: tiny server
