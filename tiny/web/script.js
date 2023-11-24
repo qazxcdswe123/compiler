@@ -17,12 +17,22 @@ save_button.addEventListener('click', () => {
 
 // load the text from file to input
 load_button.addEventListener('click', () => {
-    const file = document.getElementById('file-input').files[0];
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        input.value = e.target.result;
-    };
-    reader.readAsText(file);
+    // Trigger the file input dialog
+    document.getElementById('file-input').click();
+
+    // Add change event listener to file input
+    document.getElementById('file-input').addEventListener('change', function () {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const text = e.target.result;
+                // Make sure you reference the text area correctly
+                document.getElementById('input-text').value = text;
+            };
+            reader.readAsText(file);
+        }
+    });
 });
 
 // convert the text from input to ast
