@@ -1,4 +1,9 @@
+.DEFAULT_GOAL := all
+.PHONY: all clean
+
 CC = gcc
+
+CXX = g++
 
 CFLAGS = -g
 
@@ -34,9 +39,13 @@ cgen.o: cgen.c globals.h symtab.h code.h cgen.h
 clean:
 	rm -f tiny
 	rm -f tm
+	rm -f server
 	rm -f $(OBJS)
 
 tm: tm.c
 	$(CC) $(CFLAGS) -o tm tm.c
 
-all: tiny tm
+server: server.cpp
+	$(CXX) $(CFLAGS) -o server server.cpp
+
+all: tiny server

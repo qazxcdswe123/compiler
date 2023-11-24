@@ -1,0 +1,34 @@
+/* input left half */
+/* output right half */
+/* button middle */
+
+#app {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    height: 80vh;
+}
+
+#input {
+    width: 45%;
+}
+
+#output {
+    width: 45%;
+    float: right;
+}
+
+#output-ast {
+    white-space: pre;
+}
+
+textarea {
+    width: 99%;
+    height: 100%;
+}
+
+/* center the height of the button */
+#button {
+    display: flex;
+    align-items: center;
+}

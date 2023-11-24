@@ -38,3 +38,5 @@ build
 *.app
 
 .idea
+tiny/server
+tiny/tm
