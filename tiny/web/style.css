@@ -32,3 +32,8 @@ textarea {
     display: flex;
     align-items: center;
 }
+
+#expand {
+    border: none;
+    margin-right: 16px;
+}

@@ -1,0 +1,4 @@
+if  (x>0)
+  fact := 1;
+else
+  write fact

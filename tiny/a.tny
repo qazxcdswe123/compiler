@@ -1,0 +1,4 @@
+for fact := x downto 1 do 
+  fact := fact * x;
+enddo
+write a;

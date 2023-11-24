@@ -1,0 +1,14 @@
+if (a = b)
+    write a;
+
+if (a <= b)
+    write a;
+
+if (a >= b)
+    write a;
+
+if (a <> b)
+    write a;
+
+if (a > b)
+    write a;

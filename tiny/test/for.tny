@@ -1,0 +1,7 @@
+for fact := x downto 1 do 
+    fact := fact * x;
+enddo
+
+for fact := x to 1 do 
+    fact := fact * x;
+enddo
