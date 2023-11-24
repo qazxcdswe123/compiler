@@ -194,7 +194,9 @@ TreeNode *assign_stmt(void)
         {
             if (token == REGEXP)
             {
+                match(REGEXP);
                 t->child[0] = regexp();
+                match(REGEXP);
             }
             else
             {
@@ -282,7 +284,6 @@ TreeNode *simple_exp(void)
     return t;
 }
 
-// term -> {bitnot} term
 TreeNode *term(void)
 {
     TreeNode *t = power();
@@ -344,9 +345,6 @@ TreeNode *factor(void)
         if ((t != NULL) && (token == ID))
             t->attr.name = copyString(tokenString);
         match(ID);
-        break;
-    case REGEXP:
-        t = regexp();
         break;
     case LPAREN:
         match(LPAREN);
@@ -450,8 +448,6 @@ static TreeNode *regexp_closure(void)
 
 static TreeNode *regexp(void)
 {
-    match(REGEXP);
-
     TreeNode *t = NULL;
     t = regexp_unit();
 
@@ -482,7 +478,6 @@ static TreeNode *regexp(void)
         }
     }
 
-    match(REGEXP);
     return t;
 }
 
