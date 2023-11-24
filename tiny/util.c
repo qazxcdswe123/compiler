@@ -162,7 +162,7 @@ TreeNode *newExpNode(ExpKind kind)
         t->nodekind = ExpK;
         t->kind.exp = kind;
         t->lineno = lineno;
-        t->type = Void;
+        t->type = Integer;
     }
     return t;
 }

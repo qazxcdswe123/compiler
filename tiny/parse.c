@@ -228,7 +228,7 @@ TreeNode *write_stmt(void)
 TreeNode *bitwise_exp(void)
 {
     TreeNode *t = term();
-    while ((token == BITAND) || (token == BITOR) || (token == BITNOT))
+    while ((token == BITAND) || (token == BITOR))
     {
         TreeNode *p = newExpNode(OpK);
         if (p != NULL)
@@ -282,6 +282,7 @@ TreeNode *simple_exp(void)
     return t;
 }
 
+// term -> {bitnot} term
 TreeNode *term(void)
 {
     TreeNode *t = power();
@@ -324,6 +325,14 @@ TreeNode *factor(void)
     TreeNode *t = NULL;
     switch (token)
     {
+    case BITNOT:
+        t = newExpNode(UnaryOpK);
+        if ((t != NULL) && (token == BITNOT))
+            t->attr.op = token;
+        match(BITNOT);
+        if (t != NULL)
+            t->child[0] = factor();
+        break;
     case NUM:
         t = newExpNode(ConstK);
         if ((t != NULL) && (token == NUM))
@@ -461,7 +470,8 @@ static TreeNode *regexp(void)
     }
 
     // Unary Operation
-    while ((token == REGEXPCLOSURE) || (token == REGEXPOPTIONAL)) {
+    while ((token == REGEXPCLOSURE) || (token == REGEXPOPTIONAL))
+    {
         TreeNode *p = newExpNode(UnaryOpK);
         if (p != NULL)
         {
@@ -471,7 +481,7 @@ static TreeNode *regexp(void)
             match(token);
         }
     }
-    
+
     match(REGEXP);
     return t;
 }
