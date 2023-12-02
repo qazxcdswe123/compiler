@@ -1,14 +1,14 @@
 if (a = b)
-    write a;
+    write 1;
 
 if (a <= b)
-    write a;
+    write 2;
 
 if (a >= b)
-    write a;
+    write 3;
 
 if (a <> b)
-    write a;
+    write 4;
 
 if (a > b)
-    write a;
+    write 5;
