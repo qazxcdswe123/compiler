@@ -219,6 +219,9 @@ void printTree(TreeNode *tree)
             case IfK:
                 fprintf(listing, "If\n");
                 break;
+            case ElseK:
+                fprintf(listing, "Else\n");
+                break;
             case RepeatK:
                 fprintf(listing, "Repeat\n");
                 break;

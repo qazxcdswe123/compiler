@@ -93,6 +93,7 @@ typedef enum
 typedef enum
 {
     IfK,
+    ElseK,
     RepeatK,
     AssignK,
     ReadK,

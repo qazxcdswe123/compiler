@@ -6,7 +6,7 @@
             "request": "launch",
             "name": "Debug",
             "program": "${workspaceFolder}/tiny",
-            "args": ["a.tny"],
+            "args": ["input.tny"],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "build"
         }

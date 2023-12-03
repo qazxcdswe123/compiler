@@ -16,6 +16,7 @@ static TokenType token; /* holds current token */
 static TreeNode *stmt_sequence(void);
 static TreeNode *statement(void);
 static TreeNode *if_stmt(void);
+static TreeNode *else_stmt(void);
 static TreeNode *repeat_stmt(void);
 static TreeNode *assign_stmt(void);
 static TreeNode *read_stmt(void);
@@ -107,9 +108,11 @@ TreeNode *statement(void)
     case FOR:
         t = for_stmt();
         break;
+    case ELSE:
+        t = else_stmt();
+        break;
     case ENDFILE:
     case ENDDO:
-    case ELSE:
         break;
     default:
         syntaxError("STMT: unexpected token -> ");
@@ -136,11 +139,20 @@ TreeNode *if_stmt(void)
 
     if (token == ELSE)
     {
-        match(ELSE);
+        // match(ELSE);
         if (t != NULL)
             t->child[2] = stmt_sequence();
     }
 
+    return t;
+}
+
+TreeNode *else_stmt(void)
+{
+    TreeNode *t = newStmtNode(ElseK);
+    match(ELSE);
+    if (t != NULL)
+        t->child[0] = stmt_sequence();
     return t;
 }
 
@@ -395,25 +407,29 @@ static TreeNode *regexp_unit(void)
 
     switch (token)
     {
-    case ID:
-        t = newExpNode(IdK);
-        if ((t != NULL) && (token == ID))
-            t->attr.name = copyString(tokenString);
-        match(ID);
-        break;
+    // case ID:
+    //     t = newExpNode(IdK);
+    //     if ((t != NULL) && (token == ID))
+    //         t->attr.name = copyString(tokenString);
+    //     match(ID);
+    //     break;
     case LPAREN:
         match(LPAREN);
         t = regexp();
-        match(RPAREN);
         break;
     case REGEXPCLOSURE:
         match(REGEXPCLOSURE);
         break;
     default:
-        syntaxError("REGEXP_UNIT: unexpected token -> ");
-        printToken(token, tokenString);
-        token = getToken();
+        t = newExpNode(IdK);
+        if ((t != NULL))
+            t->attr.name = copyString(tokenString);
+        match(token);
         break;
+        // syntaxError("REGEXP_UNIT: unexpected token -> ");
+        // printToken(token, tokenString);
+        // token = getToken();
+        // break;
     }
 
     return t;
@@ -451,31 +467,37 @@ static TreeNode *regexp(void)
     TreeNode *t = NULL;
     t = regexp_unit();
 
-    // Binary Operation
-    while ((token == REGEXPOR) || (token == REGEXPCONCAT))
+    while (token != REGEXP)
     {
-        TreeNode *p = newExpNode(OpK);
-        if (p != NULL)
+        // Binary Operation
+        while ((token == REGEXPOR) || (token == REGEXPCONCAT))
         {
-            p->child[0] = t;
-            p->attr.op = token;
-            t = p;
-            match(token);
-            p->child[1] = regexp_unit();
+            TreeNode *p = newExpNode(OpK);
+            if (p != NULL)
+            {
+                p->child[0] = t;
+                p->attr.op = token;
+                t = p;
+                match(token);
+                p->child[1] = regexp_unit();
+            }
         }
-    }
 
-    // Unary Operation
-    while ((token == REGEXPCLOSURE) || (token == REGEXPOPTIONAL))
-    {
-        TreeNode *p = newExpNode(UnaryOpK);
-        if (p != NULL)
+        // Unary Operation
+        while ((token == REGEXPCLOSURE) || (token == REGEXPOPTIONAL))
         {
-            p->child[0] = t;
-            p->attr.op = token;
-            t = p;
-            match(token);
+            TreeNode *p = newExpNode(UnaryOpK);
+            if (p != NULL)
+            {
+                p->child[0] = t;
+                p->attr.op = token;
+                t = p;
+                match(token);
+            }
         }
+
+        if (token == RPAREN)
+            match(RPAREN);
     }
 
     return t;
