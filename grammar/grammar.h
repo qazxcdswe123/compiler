@@ -72,29 +72,13 @@ public:
         return followSet_;
     }
 
-    [[nodiscard]] const map<pair<size_t, char>, size_t> &getGotoTable() const {
-        return gotoTable_;
-    }
-
-    [[nodiscard]] const map<pair<size_t, char>, Action> &getActionTable() const {
-        return actionTable_;
-    }
-
-    [[nodiscard]] const map<pair<size_t, char>, size_t> &getTransition() const {
-        return gotoTable_;
-    }
-
-    [[nodiscard]] const set<LR0Item> &getLr0Items() const {
-        return lr0Items_;
-    }
-
     string parse(const string &input);
 
     std::optional<string> buildSLR1Table();
 
 private:
     // single capital letter for non-terminal
-    // non capital letter for terminal
+    // non-capital letter for terminal
     // @ for epsilon
     // the first capital letter on the left is the start symbol
 
@@ -116,7 +100,6 @@ private:
 
     void buildFirstSet();
     void buildFollowSet();
-    void buildLR0Items();
     void buildLR0DFA();
 
     // closure of a set of LR0 items

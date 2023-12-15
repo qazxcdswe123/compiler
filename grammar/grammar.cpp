@@ -38,7 +38,6 @@ Grammar::Grammar(const vector<string> &inputs) {
 
     buildFirstSet();
     buildFollowSet();
-    buildLR0Items();
     buildLR0DFA();
 }
 
@@ -70,7 +69,7 @@ void Grammar::buildFirstSet() {
             for (const auto &rhs: item.second) {
                 bool foundEpsilon = true;
                 size_t before = firstSet_[nonTerminal].size();
-                size_t after = 0;
+                size_t after;
 
                 for (const auto &symbol: rhs) {
                     // if the symbol is a non-terminal
@@ -256,19 +255,8 @@ void Grammar::buildLR0DFA() {
         }
     }
 
-    // build transition
+    // build goto table
     for (const auto &state: lr0DFAStates_) {
-//        for (const auto &symbol: terminals_) {
-//            set<LR0Item> goTo = Grammar::goTo(state.items, symbol);
-//            if (!goTo.empty()) {
-//                State newState = State{goTo};
-//                auto it = lr0DFAStates_.find(newState);
-//                if (it != lr0DFAStates_.end()) {
-//                    gotoTable_[{state.id, symbol}] = it->id;
-//                }
-//            }
-//        }
-
         for (const auto &symbol: nonTerminals_) {
             set<LR0Item> goTo = Grammar::goTo(state.items, symbol);
             if (!goTo.empty()) {
@@ -277,16 +265,6 @@ void Grammar::buildLR0DFA() {
                 if (it != lr0DFAStates_.end()) {
                     gotoTable_[{state.id, symbol}] = it->id;
                 }
-            }
-        }
-    }
-}
-
-void Grammar::buildLR0Items() {
-    for (const auto &[head, productions]: productions_) {
-        for (const auto &production: productions) {
-            for (size_t i = 0; i <= production.size(); i++) {
-                lr0Items_.insert({head, production, i});
             }
         }
     }
@@ -433,8 +411,6 @@ string Grammar::parse(const string &input) {
                         found = true;
 
                         // reduce
-//                        cout << "Info: Reduce using: " << setOfProductions.first << "->" << production << endl;
-//                        cout << endl;
                         procedure += "Info: Reduce using: " + string(1, setOfProductions.first) + "->" + production + "\n\n";
                         for (int i = 0; i < production.size(); i++) {
                             symbolStack.pop_back();
@@ -463,8 +439,6 @@ string Grammar::parse(const string &input) {
             }
 
         } else if (action.type == ActionType::SHIFT) {
-//            cout << "Info: Shift to state: " << action.to << endl;
-//            cout << endl;
             procedure += "Info: Shift to state: " + std::to_string(action.to) + "\n\n";
             stateStack.emplace(action.to, inputSymbol);
             symbolStack.push_back(inputSymbol);

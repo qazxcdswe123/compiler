@@ -39,7 +39,6 @@ TEST(GrammarTest, LR0) {
     };
 
     Grammar g(inputs);
-    EXPECT_EQ(g.getLr0Items().size(), 18);
     EXPECT_EQ(g.getLr0DfaStates().size(), 12);
 
     // capture stdout
