@@ -1,0 +1,21 @@
+/* All elements inside container should be centerd */
+/* With new line */
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+td {
+    letter-spacing: 3px;
+}
+
+table, th, td {
+    border: 1px solid #000;
+}

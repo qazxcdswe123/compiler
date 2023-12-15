@@ -64,6 +64,22 @@ public:
         return lr0DFAStates_;
     }
 
+    [[nodiscard]] const map<char, set<char>> &getFirstSet1() const {
+        return firstSet_;
+    }
+
+    [[nodiscard]] const map<char, set<char>> &getFollowSet1() const {
+        return followSet_;
+    }
+
+    [[nodiscard]] const map<pair<size_t, char>, size_t> &getGotoTable() const {
+        return gotoTable_;
+    }
+
+    [[nodiscard]] const map<pair<size_t, char>, Action> &getActionTable() const {
+        return actionTable_;
+    }
+
     [[nodiscard]] const map<pair<size_t, char>, size_t> &getTransition() const {
         return gotoTable_;
     }
@@ -72,7 +88,10 @@ public:
         return lr0Items_;
     }
 
-    bool parse(const string &input);
+    string parse(const string &input);
+
+    std::optional<string> buildSLR1Table();
+
 private:
     // single capital letter for non-terminal
     // non capital letter for terminal
@@ -83,7 +102,6 @@ private:
     set<char> terminals_;
     map<char, set<string>> productions_;
     char startSymbol_;
-//    bool isSLR1;
 
     map<char, set<char>> firstSet_;
     map<char, set<char>> followSet_;
@@ -104,7 +122,6 @@ private:
 
     void buildLR0DFA();
 
-    std::optional<string> buildSLR1Table();
 
     // closure of a set of LR0 items
     set<LR0Item> closure(const set<LR0Item> &items);

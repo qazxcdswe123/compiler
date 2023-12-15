@@ -40,14 +40,6 @@ Grammar::Grammar(const vector<string> &inputs) {
     buildFollowSet();
     buildLR0Items();
     buildLR0DFA();
-    auto res = buildSLR1Table();
-    if (res.has_value()) {
-        throw std::invalid_argument(res.value());
-    } else {
-        std::cout << "build SLR(1) table success" << std::endl;
-    }
-
-
 }
 
 void Grammar::buildFirstSet() {
@@ -392,32 +384,37 @@ std::optional<string> Grammar::buildSLR1Table() {
     return std::nullopt;
 }
 
-bool Grammar::parse(const string &input) {
+string Grammar::parse(const string &input) {
     using std::stack, std::cout, std::endl;
     stack<pair<size_t, char>> stateStack;
-    stateStack.push({0, '$'});
+    stateStack.emplace(0, '$');
     vector<char> symbolStack;
 
     string inputCopy = input + '$';
     size_t inputPos = 0;
+
+    string procedure;
 
     while (!stateStack.empty()) {
         size_t state = stateStack.top().first;
         char symbol = stateStack.top().second;
 
         string symbolStackStr(symbolStack.begin(), symbolStack.end());
-        cout << "Debug: symbol stack: " << symbolStackStr << endl;
-        cout << "Debug: input: " << inputCopy.substr(inputPos) << endl;
+//        cout << "Debug: symbol stack: " << symbolStackStr << endl;
+//        cout << "Debug: input: " << inputCopy.substr(inputPos) << endl;
+        procedure += "Debug: symbol stack: " + symbolStackStr + "\n";
+        procedure += "Debug: input: " + inputCopy.substr(inputPos) + "\n";
 
         char inputSymbol = inputCopy[inputPos];
         auto it = actionTable_.find({state, inputSymbol});
         if (it == actionTable_.end()) {
-            return false;
+            return "Error";
         }
 
         Action action = it->second;
         if (action.type == ActionType::ACCEPT) {
-            return true;
+            procedure += "Info: Accept\n\n";
+            return procedure;
         } else if (action.type == ActionType::REDUCE) {
             // the production must be on both sides of the state and the dotPos must be at the end
 
@@ -426,8 +423,8 @@ bool Grammar::parse(const string &input) {
                 return s.id == state;
             });
             if (it2 == lr0DFAStates_.end()) {
-                cout << "error" << endl;
-                return false;
+                procedure += "Error: cannot find state " + std::to_string(state) + "\n\n";
+                return procedure;
             }
 
             int productionIndex = action.to;
@@ -438,8 +435,9 @@ bool Grammar::parse(const string &input) {
                         found = true;
 
                         // reduce
-                        cout << "Info: Reduce using: " << setOfProductions.first << "->" << production << endl;
-                        cout << endl;
+//                        cout << "Info: Reduce using: " << setOfProductions.first << "->" << production << endl;
+//                        cout << endl;
+                        procedure += "Info: Reduce using: " + string(1, setOfProductions.first) + "->" + production + "\n\n";
                         for (int i = 0; i < production.size(); i++) {
                             symbolStack.pop_back();
                             stateStack.pop();
@@ -451,8 +449,8 @@ bool Grammar::parse(const string &input) {
                         // push the goto state
                         auto it3 = gotoTable_.find({stateStack.top().first, setOfProductions.first});
                         if (it3 == gotoTable_.end()) {
-                            cout << "error" << endl;
-                            return false;
+                            procedure += "Error: cannot find goto state\n\n";
+                            return procedure;
                         }
                         stateStack.emplace(it3->second, setOfProductions.first);
 
@@ -467,12 +465,13 @@ bool Grammar::parse(const string &input) {
             }
 
         } else if (action.type == ActionType::SHIFT) {
-            cout << "Info: Shift to state: " << action.to << endl;
-            cout << endl;
+//            cout << "Info: Shift to state: " << action.to << endl;
+//            cout << endl;
+            procedure += "Info: Shift to state: " + std::to_string(action.to) + "\n\n";
             stateStack.emplace(action.to, inputSymbol);
             symbolStack.push_back(inputSymbol);
             inputPos++;
         }
     }
-    return true;
+    return procedure;
 }
