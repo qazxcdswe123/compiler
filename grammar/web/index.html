@@ -1,0 +1,50 @@
+<!-- A input box to input grammar -->
+<!-- A input box to input sentense -->
+
+<!-- A div to display first and follow set using table-->
+
+<!-- A place to check if the grammar SLR(1) table (if it is) -->
+
+<!-- A div to display the processing procedure -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Grammar</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <!-- Put it from top to bottom all on the same page -->
+    <div class="flex-container">
+        <div class="grammar">
+            <h2>Grammar Input</h2>
+            <textarea id="grammarInput"></textarea>
+        </div>
+        <div class="load-save">
+            <button id="load">Load</button>
+            <button id="save">Save</button>
+        </div>
+        <div class="sentence">
+            <h2>Sentence Input</h2>
+            <textarea id="sentenceInput"></textarea>
+        </div>
+        <button id="analyze">Analyze</button>
+        <div class="first-follow">
+            <h2>First and Follow</h2>
+            <table id="first-tbl">
+            </table>
+            <table id="follow-tbl">
+            </table>
+        </div>
+        <div id="slr1">
+            <h2>Is SLR(1)?</h2>
+        </div>
+        <div id="procedure">
+            <h2>Procedure</h2>
+        </div>
+    </div>
+</body>
+</html>
