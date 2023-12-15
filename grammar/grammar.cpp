@@ -399,15 +399,14 @@ string Grammar::parse(const string &input) {
         size_t state = stateStack.top().first;
 
         string symbolStackStr(symbolStack.begin(), symbolStack.end());
-//        cout << "Debug: symbol stack: " << symbolStackStr << endl;
-//        cout << "Debug: input: " << inputCopy.substr(inputPos) << endl;
         procedure += "Debug: symbol stack: " + symbolStackStr + "\n";
         procedure += "Debug: input: " + inputCopy.substr(inputPos) + "\n";
 
         char inputSymbol = inputCopy[inputPos];
         auto it = actionTable_.find({state, inputSymbol});
         if (it == actionTable_.end()) {
-            return "Error";
+            procedure += "Error: cannot find action\n\n";
+            return procedure;
         }
 
         Action action = it->second;

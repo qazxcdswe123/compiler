@@ -139,7 +139,12 @@ TEST(GrammarTest, SLR1) {
         };
 
         Grammar g(inputs);
-        g.parse("i*i+i");
+        auto notSLR1Reason = g.buildSLR1Table();
+        EXPECT_FALSE(notSLR1Reason.has_value());
+
+        auto procedure = g.parse("i*i+i");
+        EXPECT_EQ(procedure,
+                  "Debug: symbol stack: \nDebug: input: i*i+i$\nInfo: Shift to state: 2\n\nDebug: symbol stack: i\nDebug: input: *i+i$\nInfo: Reduce using: F->i\n\nDebug: symbol stack: F\nDebug: input: *i+i$\nInfo: Reduce using: T->F\n\nDebug: symbol stack: T\nDebug: input: *i+i$\nInfo: Shift to state: 10\n\nDebug: symbol stack: T*\nDebug: input: i+i$\nInfo: Shift to state: 2\n\nDebug: symbol stack: T*i\nDebug: input: +i$\nInfo: Reduce using: F->i\n\nDebug: symbol stack: T*F\nDebug: input: +i$\nInfo: Reduce using: T->T*F\n\nDebug: symbol stack: T\nDebug: input: +i$\nInfo: Reduce using: E->T\n\nDebug: symbol stack: E\nDebug: input: +i$\nInfo: Shift to state: 6\n\nDebug: symbol stack: E+\nDebug: input: i$\nInfo: Shift to state: 2\n\nDebug: symbol stack: E+i\nDebug: input: $\nInfo: Reduce using: F->i\n\nDebug: symbol stack: E+F\nDebug: input: $\nInfo: Reduce using: T->F\n\nDebug: symbol stack: E+T\nDebug: input: $\nInfo: Reduce using: E->E+T\n\nDebug: symbol stack: E\nDebug: input: $\nInfo: Accept\n\n");
     }
 
     {
@@ -151,8 +156,11 @@ TEST(GrammarTest, SLR1) {
                 "R->L"
         };
 
-        // expect to throw
-        EXPECT_THROW(Grammar g(inputs), std::invalid_argument);
+        // expect to say it's not SLR1 (have string in the optional type)
+        Grammar g(inputs);
+        auto notSLR1Reason = g.buildSLR1Table();
+        EXPECT_TRUE(notSLR1Reason.has_value());
+        EXPECT_EQ(notSLR1Reason.value(), "shift-reduce conflict at state 3 with symbol =");
     }
 }
 

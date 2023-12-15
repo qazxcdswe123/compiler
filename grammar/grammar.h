@@ -115,13 +115,9 @@ private:
 
 
     void buildFirstSet();
-
     void buildFollowSet();
-
     void buildLR0Items();
-
     void buildLR0DFA();
-
 
     // closure of a set of LR0 items
     set<LR0Item> closure(const set<LR0Item> &items);
