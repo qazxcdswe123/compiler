@@ -437,7 +437,6 @@ string Grammar::parse(const string &input) {
                     break;
                 }
             }
-
         } else if (action.type == ActionType::SHIFT) {
             procedure += "Info: Shift to state: " + std::to_string(action.to) + "\n\n";
             stateStack.emplace(action.to, inputSymbol);

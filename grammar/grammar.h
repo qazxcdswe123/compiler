@@ -60,6 +60,26 @@ public:
 
     [[nodiscard]] const set<char> &getFollowSet(char) const;
 
+    [[nodiscard]] const map<pair<size_t, char>, size_t> &getGotoTable() const {
+        return gotoTable_;
+    }
+
+    [[nodiscard]] const map<pair<size_t, char>, Action> &getActionTable() const {
+        return actionTable_;
+    }
+
+    [[nodiscard]] const map<char, set<string>> &getProductions() const {
+        return productions_;
+    }
+
+    [[nodiscard]] const set<char> &getNonTerminals() const {
+        return nonTerminals_;
+    }
+
+    [[nodiscard]] const set<char> &getTerminals() const {
+        return terminals_;
+    }
+
     [[nodiscard]] const set<State> &getLr0DfaStates() const {
         return lr0DFAStates_;
     }
@@ -99,7 +119,9 @@ private:
 
 
     void buildFirstSet();
+
     void buildFollowSet();
+
     void buildLR0DFA();
 
     // closure of a set of LR0 items

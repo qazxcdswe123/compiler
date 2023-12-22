@@ -23,15 +23,13 @@ procedure (String): A string representing a sequence of debug and info messages 
 const analyzeBtn = document.getElementById("analyze");
 
 analyzeBtn.addEventListener("click", () => {
-    const sentence = document.getElementById("sentenceInput").value.replace(/\+/g, '%2B');
-    const grammar = document.getElementById("grammarInput").value.replace(/\+/g, '%2B');
+    const sentence = document.getElementById("sentenceInput").value.replace(/\+/g, '%2B').replace(/=/g, '%3D');
+    const grammar = document.getElementById("grammarInput").value.replace(/\+/g, '%2B').replace(/=/g, '%3D');
     console.log(sentence);
     console.log(grammar);
     fetch("http://127.0.0.1:8080/grammar", {
-        method: "POST",
-        // x-www-form-urlencoded
-        headers: {"Content-Type": "application/x-www-form-urlencoded"},
-        body: `grammar=${grammar}&sentence=${sentence}`,
+        method: "POST", // x-www-form-urlencoded
+        headers: {"Content-Type": "application/x-www-form-urlencoded"}, body: `grammar=${grammar}&sentence=${sentence}`,
     })
         .then((response) => response.json())
         .then((data) => {
@@ -51,9 +49,7 @@ analyzeBtn.addEventListener("click", () => {
                 const symbol = document.createElement("td");
                 const firstSet = document.createElement("td");
                 symbol.innerText = String.fromCharCode(row[0]);
-                firstSet.innerText = row[1].map((x) =>
-                    String.fromCharCode(x)
-                );
+                firstSet.innerText = row[1].map((x) => String.fromCharCode(x));
                 tr.appendChild(symbol);
                 tr.appendChild(firstSet);
                 first_tbl.appendChild(tr);
@@ -74,9 +70,7 @@ analyzeBtn.addEventListener("click", () => {
                 const symbol = document.createElement("td");
                 const followSet = document.createElement("td");
                 symbol.innerText = String.fromCharCode(row[0]);
-                followSet.innerText = row[1].map((x) =>
-                    String.fromCharCode(x)
-                );
+                followSet.innerText = row[1].map((x) => String.fromCharCode(x));
                 tr.appendChild(symbol);
                 tr.appendChild(followSet);
                 follow_tbl.appendChild(tr);
@@ -103,30 +97,88 @@ analyzeBtn.addEventListener("click", () => {
                     const stateNum = document.createElement("td");
                     stateNum.innerText = `State ${i}`;
                     tr.appendChild(stateNum);
-                    /*
-                     "dotPos": 0,
-                    "left": 70,
-                    "right": "(E)"
 
-                    means F -> .E
-                     */
                     const stateContent = document.createElement("td");
                     const stateContentList = document.createElement("ul");
                     for (const item of state) {
                         const stateContentItem = document.createElement("li");
-                        stateContentItem.innerText = `${String.fromCharCode(
-                            item.left
-                        )} -> ${item.right.slice(
-                            0,
-                            item.dotPos
-                        )}.${item.right.slice(item.dotPos)}`;
+                        stateContentItem.innerText = `${String.fromCharCode(item.left)} -> ${item.right.slice(0, item.dotPos)}.${item.right.slice(item.dotPos)}`;
                         stateContentList.appendChild(stateContentItem);
                     }
                     stateContent.appendChild(stateContentList);
                     tr.appendChild(stateContent);
+
                     DFAStateTable.appendChild(tr);
                 }
                 slr1.appendChild(DFAStateTable);
+
+                const gotoH2 = document.createElement("h2");
+                gotoH2.innerText = "Goto Table";
+                slr1.appendChild(gotoH2);
+
+                // add goto table
+
+                const gotoTable = document.createElement("table");
+                const gotoHeader = document.createElement("tr");
+                gotoHeader.innerHTML = "<th>State</th>";
+                for (const symbol of data.nonTerminals) {
+                    gotoHeader.innerHTML += `<th>${String.fromCharCode(symbol)}</th>`;
+                }
+                gotoTable.appendChild(gotoHeader);
+                for (i = 0; i < DFAStates.length; i++) {
+                    const gotoRow = document.createElement("tr");
+                    const gotoState = document.createElement("td");
+                    gotoState.innerText = `State ${i}`;
+                    gotoRow.appendChild(gotoState);
+                    for (const symbol of data.nonTerminals) {
+                        stringSymbol = String.fromCharCode(symbol);
+                        const gotoCell = document.createElement("td");
+                        // if the table symbol and the data symbol match and the state id match
+                        const goto = data.gotoTable.find((x) => x.symbol === stringSymbol && x.state === i);
+                        if (goto) {
+                            gotoCell.innerText = goto.goto;
+                        }
+                        gotoRow.appendChild(gotoCell);
+                    }
+                    gotoTable.appendChild(gotoRow);
+                }
+                slr1.appendChild(gotoTable);
+
+                // add action table
+
+                const actionH2 = document.createElement("h2");
+                actionH2.innerText = "Action Table";
+                slr1.appendChild(actionH2);
+
+                const actionTable = document.createElement("table");
+                const actionHeader = document.createElement("tr");
+                actionHeader.innerHTML = "<th>State</th>";
+                for (const symbol of data.terminals) {
+                    actionHeader.innerHTML += `<th>${String.fromCharCode(symbol)}</th>`;
+                }
+                actionTable.appendChild(actionHeader);
+                for (i = 0; i < DFAStates.length; i++) {
+                    const actionRow = document.createElement("tr");
+                    const actionState = document.createElement("td");
+                    actionState.innerText = `State ${i}`;
+                    actionRow.appendChild(actionState);
+
+                    for (const symbol of data.terminals) {
+                        const actionCell = document.createElement("td");
+                        let charCode = String.fromCharCode(symbol);
+                        const action = data.actionTable.find((x) => {
+                            const sameSymbol = x.symbol === charCode;
+                            const sameState = parseInt(x.state) === i;
+                            return sameSymbol && sameState;
+                        });
+                        if (action) {
+                            actionCell.innerText = action.action;
+                        }
+                        actionRow.appendChild(actionCell);
+                    }
+                    actionTable.appendChild(actionRow);
+                }
+                slr1.appendChild(actionTable);
             } else {
                 // just say no in the div
                 const slr1 = document.getElementById("slr1");
@@ -135,7 +187,7 @@ analyzeBtn.addEventListener("click", () => {
                 h2.innerText = "Is SLR(1)?";
                 slr1.appendChild(h2);
                 const p = document.createElement("p");
-                p.innerText = "No";
+                p.innerText = "No\n" + data.notSLR1Reason;
                 slr1.appendChild(p);
             }
 
