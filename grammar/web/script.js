@@ -189,6 +189,29 @@ analyzeBtn.addEventListener("click", () => {
                 const p = document.createElement("p");
                 p.innerText = "No\n" + data.notSLR1Reason;
                 slr1.appendChild(p);
+
+                const DFAStates = data.DFAStates;
+                const DFAStateTable = document.createElement("table");
+                for (i = 0; i < DFAStates.length; i++) {
+                    const state = DFAStates[i];
+                    const tr = document.createElement("tr");
+                    const stateNum = document.createElement("td");
+                    stateNum.innerText = `State ${i}`;
+                    tr.appendChild(stateNum);
+
+                    const stateContent = document.createElement("td");
+                    const stateContentList = document.createElement("ul");
+                    for (const item of state) {
+                        const stateContentItem = document.createElement("li");
+                        stateContentItem.innerText = `${String.fromCharCode(item.left)} -> ${item.right.slice(0, item.dotPos)}.${item.right.slice(item.dotPos)}`;
+                        stateContentList.appendChild(stateContentItem);
+                    }
+                    stateContent.appendChild(stateContentList);
+                    tr.appendChild(stateContent);
+
+                    DFAStateTable.appendChild(tr);
+                }
+                slr1.appendChild(DFAStateTable);
             }
 
 
