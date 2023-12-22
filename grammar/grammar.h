@@ -17,9 +17,7 @@ const char epsilon = '@';
 enum class ActionType {
     ACCEPT,
     REDUCE,
-    SHIFT,
-    SHIFTREDUCE,
-    REDUCEREDUCE
+    SHIFT
 };
 
 struct Action {

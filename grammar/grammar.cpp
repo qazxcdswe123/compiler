@@ -292,8 +292,6 @@ set<LR0Item> Grammar::goTo(const set<LR0Item> &items, char symbol) {
 }
 
 std::optional<string> Grammar::buildSLR1Table() {
-    string reason;
-
     // build action table
     for (const auto &state: lr0DFAStates_) {
         for (const auto &item: state.items) {
@@ -302,7 +300,8 @@ std::optional<string> Grammar::buildSLR1Table() {
                 // if the item is the start item
                 if (item.left == '\'' && item.right == string(1, startSymbol_)) {
                     if (actionTable_.find({state.id, '$'}) != actionTable_.end()) {
-                        reason = "conflict at state " + std::to_string(state.id) + " with symbol $";
+                        string reason = "conflict at state " + std::to_string(state.id) + " with symbol $";
+                        return reason;
                     }
 
                     actionTable_[{state.id, '$'}] = Action{ActionType::ACCEPT, 0};
@@ -310,9 +309,10 @@ std::optional<string> Grammar::buildSLR1Table() {
                     // the item is not the start item
                     for (const auto &symbol: followSet_[item.left]) {
                         if (actionTable_.find({state.id, symbol}) != actionTable_.end()) {
-                            reason =
+                            string reason =
                                     "reduce-reduce conflict at state " + std::to_string(state.id) + " with symbol " +
                                     symbol;
+                            return reason;
                         }
 
                         int productionId = 0;
@@ -344,9 +344,10 @@ std::optional<string> Grammar::buildSLR1Table() {
                         auto it = lr0DFAStates_.find(newState);
                         if (it != lr0DFAStates_.end()) {
                             if (actionTable_.find({state.id, symbolAfterDot}) != actionTable_.end()) {
-                                reason =
+                                string reason =
                                         "shift-reduce conflict at state " + std::to_string(state.id) + " with symbol " +
                                         symbolAfterDot;
+                                return reason;
                             }
 
                             actionTable_[{state.id, symbolAfterDot}] = Action{ActionType::SHIFT, it->id};
@@ -357,9 +358,6 @@ std::optional<string> Grammar::buildSLR1Table() {
         }
     }
 
-    if (!reason.empty()) {
-        return reason;
-    }
     // success
     return std::nullopt;
 }
@@ -413,8 +411,7 @@ string Grammar::parse(const string &input) {
                         found = true;
 
                         // reduce
-                        procedure +=
-                                "Info: Reduce using: " + string(1, setOfProductions.first) + "->" + production + "\n\n";
+                        procedure += "Info: Reduce using: " + string(1, setOfProductions.first) + "->" + production + "\n\n";
                         for (int i = 0; i < production.size(); i++) {
                             symbolStack.pop_back();
                             stateStack.pop();
