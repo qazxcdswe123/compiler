@@ -72,40 +72,41 @@ int main() {
             j["notSLR1Reason"] = notSLR1Reason.value();
         } else {
             j["isSLR1"] = true;
-            j["nonTerminals"] = g.getNonTerminals();
-            // terminals include $, which is the end of the sentence
-            j["terminals"] = g.getTerminals();
-            j["terminals"].push_back('$');
-            auto actionTable = g.getActionTable();
-            for (auto &action: actionTable) {
-                using std::to_string;
-                j["actionTable"].push_back({
-                                                   {"state",  to_string(action.first.first)},
-                                                   {"symbol", string(1, action.first.second)},
-                                                   // lambda for action to json
-                                                   {"action", [&action, &g]() -> string {
-                                                       switch (action.second.type) {
-                                                           case ActionType::SHIFT:
-                                                               return "s" + to_string(action.second.to);
-                                                           case ActionType::REDUCE:
-                                                               return "r" + to_string(action.second.to);
-                                                           case ActionType::ACCEPT:
-                                                               return "acc";
-                                                           default:
-                                                               return "error";
-                                                       }
-                                                   }()}
-                                           });
-            }
+        }
 
-            auto gotoTable = g.getGotoTable();
-            for (auto &go: gotoTable) {
-                j["gotoTable"].push_back({
-                                                 {"state",  go.first.first},
-                                                 {"symbol", string(1, go.first.second)},
-                                                 {"goto",   go.second}
-                                         });
-            }
+        j["nonTerminals"] = g.getNonTerminals();
+        // terminals include $, which is the end of the sentence
+        j["terminals"] = g.getTerminals();
+        j["terminals"].push_back('$');
+        auto actionTable = g.getActionTable();
+        for (auto &action: actionTable) {
+            using std::to_string;
+            j["actionTable"].push_back({
+                                               {"state",  to_string(action.first.first)},
+                                               {"symbol", string(1, action.first.second)},
+                                               // lambda for action to json
+                                               {"action", [&action, &g]() -> string {
+                                                   switch (action.second.type) {
+                                                       case ActionType::SHIFT:
+                                                           return "s" + to_string(action.second.to);
+                                                       case ActionType::REDUCE:
+                                                           return "r" + to_string(action.second.to);
+                                                       case ActionType::ACCEPT:
+                                                           return "acc";
+                                                       default:
+                                                           return "error";
+                                                   }
+                                               }()}
+                                       });
+        }
+
+        auto gotoTable = g.getGotoTable();
+        for (auto &go: gotoTable) {
+            j["gotoTable"].push_back({
+                                             {"state",  go.first.first},
+                                             {"symbol", string(1, go.first.second)},
+                                             {"goto",   go.second}
+                                     });
         }
 
         auto procedure = g.parse(sentence);
