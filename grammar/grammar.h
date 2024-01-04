@@ -128,7 +128,7 @@ private:
     set<LR0Item> closure(const set<LR0Item> &items);
 
     // goto of a set of LR0 items
-    set<LR0Item> goTo(const set<LR0Item> &items, char symbol);
+    set<LR0Item> move(const set<LR0Item> &items, char symbol);
 };
 
 

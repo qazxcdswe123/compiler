@@ -62,12 +62,12 @@ bool DFA::containEnd(const std::set<State> &states, const NFA &nfa) {
 }
 
 DFA::DFA(const NFA &nfa) {
-    std::set<State> start = {nfa.getStart()};
+    DFAState start = {nfa.getStart()};
     start_ = getEpsilonClosure(start);
-    std::queue<std::set<State>> q;
+    std::queue<DFAState> q;
     q.push(start_);
     DFAStates_.insert(start_);
-    std::set<std::set<State>> visited;
+    std::set<DFAState> visited;
     visited.insert(start_);
     std::set<char> alphabet = getAlphabet();
 

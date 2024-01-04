@@ -43,53 +43,46 @@ Grammar::Grammar(const vector<string> &inputs) {
 
 void Grammar::buildFirstSet() {
     // first set of terminal is itself
-    // all non-capital letter on left or right is terminal
-    for (const auto &item: productions_) {
-        for (const auto &right: item.second) {
-            for (const auto &ch: right) {
-                if (isupper(ch)) {
-                    continue;
-                } else {
-                    // symbol such as ( ) @ are terminal
-                    firstSet_[ch].insert(ch);
-                }
-            }
-        }
-
-        //  Initialize first sets for all non-terminals
-        firstSet_[item.first] = {};
+    for (const auto &ch: terminals_) {
+        firstSet_[ch] = {ch};
     }
 
+    // initialize first set of non-terminal
+    for (const auto &ch: nonTerminals_) {
+        firstSet_[ch] = {};
+    }
     // first set of non-terminal
     bool changing = true;
     while (changing) {
         changing = false;
-        for (const auto &item: productions_) {
-            char nonTerminal = item.first;
-            for (const auto &rhs: item.second) {
+
+        for (const auto &p: productions_) {
+            char lhs = p.first;
+
+            for (const auto &rhs: p.second) {
                 bool foundEpsilon = true;
-                size_t before = firstSet_[nonTerminal].size();
+                size_t before = firstSet_[lhs].size();
                 size_t after;
 
-                for (const auto &symbol: rhs) {
+                for (const auto &c: rhs) {
                     // if the symbol is a non-terminal
-                    if (isupper(symbol)) {
+                    if (isupper(c)) {
                         // copy all elements except epsilon
-                        for (const auto &ch: firstSet_[symbol]) {
+                        for (const auto &ch: firstSet_[c]) {
                             if (ch != epsilon) {
-                                firstSet_[nonTerminal].insert(ch);
+                                firstSet_[lhs].insert(ch);
                             }
                         }
-                        after = firstSet_[nonTerminal].size();
+                        after = firstSet_[lhs].size();
 
-                        // If nothing is added or epsilon is not in FIRST(symbol), then stop
-                        if (before == after || firstSet_[symbol].find(epsilon) == firstSet_[symbol].end()) {
+                        // If not changing or epsilon is not in FIRST(symbol), then stop
+                        if (before == after || firstSet_[c].find(epsilon) == firstSet_[c].end()) {
                             foundEpsilon = false;
                             break;
                         }
                     } else {
                         // if the symbol is a terminal
-                        firstSet_[nonTerminal].insert(symbol);
+                        firstSet_[lhs].insert(c);
                         foundEpsilon = false;
                         break;
                     }
@@ -97,11 +90,11 @@ void Grammar::buildFirstSet() {
 
                 // If epsilon was found in all symbols of production, add epsilon to the non-terminal
                 if (foundEpsilon) {
-                    firstSet_[nonTerminal].insert(epsilon);
+                    firstSet_[lhs].insert(epsilon);
                 }
 
                 // check if the first set of non-terminal is changed
-                if (before != firstSet_[nonTerminal].size()) {
+                if (before != firstSet_[lhs].size()) {
                     changing = true;
                 }
             }
@@ -222,22 +215,13 @@ void Grammar::buildLR0DFA() {
     bool changing = true;
     while (changing) {
         size_t before = lr0DFAStates_.size();
+        set<char> allSymbols;
+        allSymbols.insert(terminals_.begin(), terminals_.end());
+        allSymbols.insert(nonTerminals_.begin(), nonTerminals_.end());
 
         for (const auto &state: lr0DFAStates_) {
-            for (const auto &symbol: terminals_) {
-                set<LR0Item> goTo = Grammar::goTo(state.items, symbol);
-                if (!goTo.empty()) {
-                    State newState = State{goTo};
-                    auto it = lr0DFAStates_.find(newState);
-                    if (it == lr0DFAStates_.end()) {
-                        newState.id = id++;
-                        lr0DFAStates_.insert(newState);
-                    }
-                }
-            }
-
-            for (const auto &symbol: nonTerminals_) {
-                set<LR0Item> goTo = Grammar::goTo(state.items, symbol);
+            for (const auto &symbol: allSymbols) {
+                set<LR0Item> goTo = Grammar::move(state.items, symbol);
                 if (!goTo.empty()) {
                     State newState = State{goTo};
                     auto it = lr0DFAStates_.find(newState);
@@ -258,7 +242,7 @@ void Grammar::buildLR0DFA() {
     // build goto table
     for (const auto &state: lr0DFAStates_) {
         for (const auto &symbol: nonTerminals_) {
-            set<LR0Item> goTo = Grammar::goTo(state.items, symbol);
+            set<LR0Item> goTo = Grammar::move(state.items, symbol);
             if (!goTo.empty()) {
                 State newState = State{goTo};
                 auto it = lr0DFAStates_.find(newState);
@@ -270,7 +254,7 @@ void Grammar::buildLR0DFA() {
     }
 }
 
-set<LR0Item> Grammar::goTo(const set<LR0Item> &items, char symbol) {
+set<LR0Item> Grammar::move(const set<LR0Item> &items, char symbol) {
     set<LR0Item> goTo;
 
     for (const auto &item: items) {
@@ -296,14 +280,10 @@ std::optional<string> Grammar::buildSLR1Table() {
     // build action table
     for (const auto &state: lr0DFAStates_) {
         for (const auto &item: state.items) {
-            // if the dot is at the end of the right hand side
+            // if the dot is at the end of the right hand side, reduce
             if (item.dotPos == item.right.size()) {
-                // if the item is the start item
+                // if the item is the start item S'->S
                 if (item.left == '\'' && item.right == string(1, startSymbol_)) {
-                    if (actionTable_.find({state.id, '$'}) != actionTable_.end()) {
-                        reason = "conflict at state " + std::to_string(state.id) + " with symbol $";
-                    }
-
                     actionTable_[{state.id, '$'}] = Action{ActionType::ACCEPT, 0};
                 } else {
                     // the item is not the start item
@@ -333,11 +313,12 @@ std::optional<string> Grammar::buildSLR1Table() {
                     }
                 }
             } else {
+                // the dot is not at the end of the right hand side, shift
                 char symbolAfterDot = item.right[item.dotPos];
 
                 // if the next symbol is a terminal
                 if (!isupper(symbolAfterDot)) {
-                    set<LR0Item> goTo = Grammar::goTo(state.items, symbolAfterDot);
+                    set<LR0Item> goTo = Grammar::move(state.items, symbolAfterDot);
                     if (!goTo.empty()) {
                         State newState = State{goTo};
                         auto it = lr0DFAStates_.find(newState);
