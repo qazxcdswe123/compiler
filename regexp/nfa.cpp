@@ -7,7 +7,7 @@
 #include <stack>
 
 std::size_t NFA::state_count_ = 0;
-std::map<State, std::map<char, std::set<State>>> NFA::transition_ = {};
+std::map<NFAState, std::map<char, std::set<NFAState>>> NFA::transition_ = {};
 
 NFA::NFA(const char &input) {
     this->start_ = state_count_++;
@@ -95,15 +95,15 @@ NFA::NFA(NFA &first, NFA &second, const char &input) {
     }
 }
 
-void NFA::epsilon_transition(State from, State to) {
+void NFA::epsilon_transition(NFAState from, NFAState to) {
     transition_[from][Epsilon].insert(to);
 }
 
-State NFA::getStart() const {
+NFAState NFA::getStart() const {
     return start_;
 }
 
-State NFA::getEnd() const {
+NFAState NFA::getEnd() const {
     return end_;
 }
 

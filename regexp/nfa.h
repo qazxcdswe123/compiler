@@ -10,17 +10,17 @@
 #include <string>
 #include <stdexcept>
 
-typedef std::size_t State;
+typedef std::size_t NFAState;
 
 constexpr char Epsilon = '\0';
 
 class NFA {
 private:
-    State start_;
-    State end_;
+    NFAState start_;
+    NFAState end_;
 
 public:
-    static std::map<State, std::map<char, std::set<State>>> transition_;
+    static std::map<NFAState, std::map<char, std::set<NFAState>>> transition_;
     static std::size_t state_count_;
 
     static void reset();
@@ -31,11 +31,11 @@ public:
 
     NFA(NFA &first, NFA &second, const char &input); // NFA for concatenation
 
-    static void epsilon_transition(State from, State to);
+    static void epsilon_transition(NFAState from, NFAState to);
 
-    [[nodiscard]] State getStart() const;
+    [[nodiscard]] NFAState getStart() const;
 
-    [[nodiscard]] State getEnd() const;
+    [[nodiscard]] NFAState getEnd() const;
 
     static bool isNormalChar(char c);
 };

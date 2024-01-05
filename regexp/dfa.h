@@ -7,24 +7,24 @@
 
 #include "nfa.h"
 
-typedef std::set<State> DFAState;
+typedef std::set<NFAState> DFAState;
 
 typedef std::set<DFAState> MinimizedDFAState;
 
 class DFA {
 public:
-    static std::set<State> getEpsilonClosure(const std::set<State> &from);
+    static std::set<NFAState> getEpsilonClosure(const std::set<NFAState> &from);
 
-    static std::set<State> move(const std::set<State> &from, char c);
+    static std::set<NFAState> move(const std::set<NFAState> &from, char c);
 
-    static bool containEnd(const std::set<State> &states, const NFA &nfa);
+    static bool containEnd(const std::set<NFAState> &states, const NFA &nfa);
 
     static std::set<DFAState> DFAStates_;
 
     static std::set<std::set<DFAState>> Minimized_DFAStates_;
 
     // transition table for DFA
-    static std::map<std::set<State>, std::map<char, std::set<State>>> transition_;
+    static std::map<std::set<NFAState>, std::map<char, std::set<NFAState>>> transition_;
 
     // transition table for Minimzed DFA
     static std::map<MinimizedDFAState, std::map<std::set<char>, MinimizedDFAState>> minimized_transition_;
@@ -38,9 +38,9 @@ public:
 
     explicit DFA(const NFA &nfa);
 
-    [[nodiscard]] const std::set<State> &getStart() const;
+    [[nodiscard]] const std::set<NFAState> &getStart() const;
 
-    [[nodiscard]] const std::set<std::set<State>> &getEnds() const;
+    [[nodiscard]] const std::set<std::set<NFAState>> &getEnds() const;
 
     void minimize();
 

@@ -8,13 +8,13 @@
 #include <queue>
 #include <stack>
 
-std::map<std::set<State>, std::map<char, std::set<State>>> DFA::transition_ = {};
+std::map<DFAState, std::map<char, DFAState>> DFA::transition_ = {};
 
-std::set<std::set<State>> DFA::DFAStates_ = {};
+std::set<DFAState> DFA::DFAStates_ = {};
 
-std::set<State> DFA::getEpsilonClosure(const std::set<State> &from) {
-    std::set<State> res;
-    std::stack<State> st;
+DFAState DFA::getEpsilonClosure(const DFAState &from) {
+    DFAState res;
+    std::stack<NFAState> st;
     for (auto state: from) {
         st.push(state);
         res.insert(state);
@@ -40,8 +40,8 @@ std::set<State> DFA::getEpsilonClosure(const std::set<State> &from) {
     return res;
 }
 
-std::set<State> DFA::move(const std::set<State> &from, char c) {
-    std::set<State> res;
+DFAState DFA::move(const DFAState &from, char c) {
+    DFAState res;
     for (auto state: from) {
         if (NFA::transition_.find(state) != NFA::transition_.end()) { // has transition
             if (NFA::transition_[state].find(c) != NFA::transition_[state].end()) { // has c transition
@@ -55,8 +55,8 @@ std::set<State> DFA::move(const std::set<State> &from, char c) {
 }
 
 
-bool DFA::containEnd(const std::set<State> &states, const NFA &nfa) {
-    return std::any_of(states.begin(), states.end(), [&nfa](State state) {
+bool DFA::containEnd(const std::set<NFAState> &states, const NFA &nfa) {
+    return std::any_of(states.begin(), states.end(), [&nfa](NFAState state) {
         return state == nfa.getEnd();
     });
 }
@@ -81,7 +81,7 @@ DFA::DFA(const NFA &nfa) {
             }
 
             auto epsilonClosure = getEpsilonClosure(next);
-            if (visited.find(epsilonClosure) == visited.end()) {
+            if (visited.count(epsilonClosure) == 0) {
                 visited.insert(epsilonClosure);
                 q.push(epsilonClosure);
             }
@@ -109,11 +109,11 @@ std::set<char> DFA::getAlphabet() {
     return alphabet;
 }
 
-const std::set<State> &DFA::getStart() const {
+const std::set<NFAState> &DFA::getStart() const {
     return start_;
 }
 
-const std::set<std::set<State>> &DFA::getEnds() const {
+const std::set<std::set<NFAState>> &DFA::getEnds() const {
     return ends_;
 }
 
@@ -129,7 +129,7 @@ void DFA::reset() {
  */
 template<typename T>
 bool contain(const std::set<T> &states, const T &state) {
-    return states.find(state) != states.end();
+    return states.count(state) != 0;
 }
 
 std::map<MinimizedDFAState, std::map<std::set<char>, MinimizedDFAState>> DFA::minimized_transition_ = {};

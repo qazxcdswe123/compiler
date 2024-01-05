@@ -75,8 +75,8 @@ void Grammar::buildFirstSet() {
                         }
                         after = firstSet_[lhs].size();
 
-                        // If not changing or epsilon is not in FIRST(symbol), then stop
-                        if (before == after || firstSet_[c].find(epsilon) == firstSet_[c].end()) {
+                        // If epsilon is not in FIRST(Right), then stop
+                        if (firstSet_[c].find(epsilon) == firstSet_[c].end()) {
                             foundEpsilon = false;
                             break;
                         }
@@ -137,11 +137,8 @@ void Grammar::buildFollowSet() {
                         // if the symbol can derive epsilon
                         if (firstSet_[symbol].find(epsilon) != firstSet_[symbol].end()) {
                             // add the first set of the symbol to the trailer
-                            for (const auto &ch: firstSet_[symbol]) {
-                                if (ch != epsilon) {
-                                    trailer.insert(ch);
-                                }
-                            }
+                            trailer.insert(firstSet_[symbol].begin(), firstSet_[symbol].end());
+                            trailer.erase(epsilon);
                         } else {
                             // if the symbol cannot derive epsilon
                             trailer = firstSet_[symbol];
@@ -178,10 +175,7 @@ set<LR0Item> Grammar::closure(const set<LR0Item> &items) {
                     LR0Item newItem = {symbolAfterDot, rhs, 0};
 
                     // Add new item if it is not in the closure
-                    if (closure.find(newItem) == closure.end()) {
-                        newItems.insert(newItem);
-                        changing = true;
-                    }
+                    newItems.insert(newItem);
                 }
             }
         }
@@ -212,20 +206,20 @@ void Grammar::buildLR0DFA() {
     startState.id = id++;
     lr0DFAStates_.insert(startState);
 
+    set<char> allSymbols;
+    allSymbols.insert(terminals_.begin(), terminals_.end());
+    allSymbols.insert(nonTerminals_.begin(), nonTerminals_.end());
+
     bool changing = true;
     while (changing) {
         size_t before = lr0DFAStates_.size();
-        set<char> allSymbols;
-        allSymbols.insert(terminals_.begin(), terminals_.end());
-        allSymbols.insert(nonTerminals_.begin(), nonTerminals_.end());
 
         for (const auto &state: lr0DFAStates_) {
             for (const auto &symbol: allSymbols) {
                 set<LR0Item> goTo = Grammar::move(state.items, symbol);
                 if (!goTo.empty()) {
                     State newState = State{goTo};
-                    auto it = lr0DFAStates_.find(newState);
-                    if (it == lr0DFAStates_.end()) {
+                    if (lr0DFAStates_.find(newState) == lr0DFAStates_.end()) {
                         newState.id = id++;
                         lr0DFAStates_.insert(newState);
                     }
@@ -255,7 +249,7 @@ void Grammar::buildLR0DFA() {
 }
 
 set<LR0Item> Grammar::move(const set<LR0Item> &items, char symbol) {
-    set<LR0Item> goTo;
+    set<LR0Item> res;
 
     for (const auto &item: items) {
         // if the dot is at the end of the right hand side
@@ -268,11 +262,11 @@ set<LR0Item> Grammar::move(const set<LR0Item> &items, char symbol) {
         // if the next symbol is the symbol we want to go to
         if (symbolAfterDot == symbol) {
             LR0Item newItem = {item.left, item.right, item.dotPos + 1};
-            goTo.insert(newItem);
+            res.insert(newItem);
         }
     }
 
-    return closure(goTo);
+    return closure(res);
 }
 
 std::optional<string> Grammar::buildSLR1Table() {
@@ -320,8 +314,8 @@ std::optional<string> Grammar::buildSLR1Table() {
                 if (!isupper(symbolAfterDot)) {
                     set<LR0Item> goTo = Grammar::move(state.items, symbolAfterDot);
                     if (!goTo.empty()) {
-                        State newState = State{goTo};
-                        auto it = lr0DFAStates_.find(newState);
+                        State toState = State{goTo};
+                        auto it = lr0DFAStates_.find(toState);
                         if (it != lr0DFAStates_.end()) {
                             if (actionTable_.find({state.id, symbolAfterDot}) != actionTable_.end()) {
                                 reason =
